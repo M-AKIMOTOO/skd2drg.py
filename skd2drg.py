@@ -2,10 +2,11 @@
 # AKIMOTO
 # 2025-03-20
 
-import datetime, os, sys, argparse
+import datetime, os, sys, argparse, pathlib
 
 skd = sys.argv[1]
 skd_read = open(skd, "r").readlines()
+skd_path = pathlib.Path(skd)
 
 exper = ""
 sources = ""
@@ -19,9 +20,9 @@ for lines in skd_read :
         
     if "2000.0" in line :  sources += lines
     
-    if "$SKED"  in line :  flag = True
+    if "$SKED"  in line :  flag = True; continue
     
-    if flag and "$SKED" != line[0] : 
+    if flag : 
         drg_line += "%-8s  30 s2  PREOB %s  %5s  MIDOB 0 POSTOB K-L-H-T- 1F00000 1F00000 1F00000 1F00000 YNNN\n" % (line[0], line[1], line[2])
     
 
@@ -61,9 +62,10 @@ $CODES
 *
 """
 
-drg_name = "%s/%s.DRG" % (os.path.dirname(skd), exper.split()[1].upper())
+drg_name = "%s/%s.DRG" % (skd_path.parent, exper.split()[1].upper())
 drg_output = open(drg_name, "w")
 drg_output.write(drg)
 drg_output.close()
 
 print(f"Make {drg_name}")
+
